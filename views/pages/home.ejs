@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulation Drones</title>
+    <style>
+        body { margin: 0; }
+        #timeline-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #timeline-controls button {
+            margin-right: 10px;
+        }
+        #collisions-list, #speed-list {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="timeline-controls">
+        <button id="play-pause">Play</button>
+        <button id="restart">Restart</button>
+        <input type="range" id="timeline" min="0" max="100" value="0" style="width: 200px;">
+        <span id="time-display">0:00</span>
+    </div>
+
+    <div id="collisions-list">
+        <h3>Collisions</h3>
+        <ul id="collisions"></ul>
+    </div>
+
+    <div id="speed-list">
+        <h3>Vitesse trop élevée</h3>
+        <ul id="speed-warnings"></ul>
+    </div>
+
+</body>
+</html>
