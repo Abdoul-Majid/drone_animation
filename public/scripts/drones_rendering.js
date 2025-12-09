@@ -22,4 +22,36 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambientLight);
+  const pointLight = new THREE.PointLight(0xffffff, 0.8);
+  pointLight.position.set(10, 10, 10);
+  scene.add(pointLight);
+
+  const droneModels = [];
+  const loader = new OBJLoader();
+
+  const groundTexture = new THREE.TextureLoader().load('models/sol.jpg');
+  groundTexture.wrapS = THREE.RepeatWrapping;
+  groundTexture.wrapT = THREE.RepeatWrapping;
+  groundTexture.repeat.set(10, 10);
+  const groundMaterial = new THREE.MeshPhongMaterial({ map: groundTexture });
+  const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = 0;
+  scene.add(ground);
+
+  const skyboxTexture = new THREE.TextureLoader().load('models/ciel.jpg');
+  const skyboxGeometry = new THREE.BoxGeometry(5000, 5000, 5000);
+  const skyboxMaterial = new THREE.MeshBasicMaterial({
+    map: skyboxTexture,
+    side: THREE.BackSide
+  });
+  const skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
+  scene.add(skybox);
+
 });
