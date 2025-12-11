@@ -142,7 +142,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     updateSpeedWarningsList();
   };
 
-  const updateCollisionsList = () => {
+    const updateCollisionsList = () => {
     const collisionsList = document.getElementById('collisions');
     collisionsList.innerHTML = collisions.map(c => `Drone ${c.drone1} and Drone ${c.drone2} at ${c.time.toFixed(2)}s`).join('<br>');
   };
@@ -176,5 +176,20 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  const clock = new THREE.Clock();
+  renderer.setAnimationLoop(() => {
+    if (isPlaying) {
+      currentTime += clock.getDelta();
+      if (currentTime > maxTime) {
+        currentTime = maxTime;
+        isPlaying = false;
+        document.getElementById('play-pause').textContent = 'Play';
+      }
+      document.getElementById('timeline').value = (currentTime / maxTime) * 100;
+      document.getElementById('time-display').textContent = formatTime(currentTime);
+      updateDrones(currentTime);
+    }
+    renderer.render(scene, camera);
+  });
 
-});
+})();
