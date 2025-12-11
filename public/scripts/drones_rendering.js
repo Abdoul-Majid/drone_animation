@@ -54,4 +54,39 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   const skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
   scene.add(skybox);
 
+  loader.load('models/drone.obj', (object) => {
+    object.scale.set(0.5, 0.5, 0.5);
+
+    drones.forEach((droneData) => {
+      const drone = object.clone();
+      const initialPosition = droneData.waypoints[0].position;
+      drone.position.set(
+        initialPosition.lng_X * scaleFactor,
+        initialPosition.alt_Y * scaleFactor,
+        initialPosition.lat_Z * scaleFactor
+      );
+      scene.add(drone);
+      droneModels.push({ model: drone, waypoints: droneData.waypoints, previousPosition: null });
+    });
+  });
+
+  const drawTrajectories = () => {
+    drones.forEach((droneData) => {
+      const waypoints = droneData.waypoints.map(wp => {
+        const pos = wp.position;
+        return new THREE.Vector3(
+          pos.lng_X * scaleFactor,
+          pos.alt_Y * scaleFactor,
+          pos.lat_Z * scaleFactor
+        );
+      });
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(waypoints);
+      const material = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+      const line = new THREE.Line(geometry, material);
+      scene.add(line);
+    });
+  };
+  drawTrajectories();
+
 });
