@@ -66,7 +66,7 @@ const createRendererAndCamera = () => {
     0.1,
     10000
   );
-  state.camera.position.set(0, 10, 30);
+  state.camera.position.set(0, 3, 5);
 
   state.renderer = new THREE.WebGLRenderer({ antialias: true });
   state.renderer.setSize(window.innerWidth, window.innerHeight);
