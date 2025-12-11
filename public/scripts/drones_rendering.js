@@ -89,4 +89,57 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   };
   drawTrajectories();
 
+  let isPlaying = false;
+  let currentTime = 0;
+  const maxTime = dronesData.drones[0].waypoints[dronesData.drones[0].waypoints.length - 1].frame / framerate;
+  const collisionRadius = 1;
+  const maxSpeed = 5;
+  const collisions = [];
+  const speedWarnings = [];
+
+  const updateDrones = (time) => {
+    droneModels.forEach((drone, index) => {
+      const waypoints = drone.waypoints;
+      const currentFrame = Math.floor(time * framerate);
+      const nextFrame = waypoints.findIndex(wp => wp.frame > currentFrame);
+
+      if (nextFrame > 0) {
+        const currentPos = waypoints[nextFrame - 1].position;
+        const nextPos = waypoints[nextFrame].position;
+
+        const t = (time * framerate - waypoints[nextFrame - 1].frame) /
+                  (waypoints[nextFrame].frame - waypoints[nextFrame - 1].frame);
+
+        const interpolatedPos = {
+          x: THREE.MathUtils.lerp(currentPos.lng_X, nextPos.lng_X, t) * scaleFactor,
+          y: THREE.MathUtils.lerp(currentPos.alt_Y, nextPos.alt_Y, t) * scaleFactor,
+          z: THREE.MathUtils.lerp(currentPos.lat_Z, nextPos.lat_Z, t) * scaleFactor,
+        };
+
+        drone.model.position.set(interpolatedPos.x, interpolatedPos.y, interpolatedPos.z);
+
+        if (drone.previousPosition) {
+          const distance = drone.model.position.distanceTo(drone.previousPosition);
+          const speed = distance / (1 / framerate);
+          if (speed > maxSpeed) {
+            speedWarnings.push({ droneId: index, time: currentTime, speed: speed });
+          }
+        }
+        drone.previousPosition = drone.model.position.clone();
+      }
+    });
+
+    for (let i = 0; i < droneModels.length; i++) {
+      for (let j = i + 1; j < droneModels.length; j++) {
+        const distance = droneModels[i].model.position.distanceTo(droneModels[j].model.position);
+        if (distance < collisionRadius * 2) {
+          collisions.push({ drone1: i, drone2: j, time: currentTime });
+        }
+      }
+    }
+
+    updateCollisionsList();
+    updateSpeedWarningsList();
+  };
+
 });
