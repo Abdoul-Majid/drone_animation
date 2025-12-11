@@ -142,4 +142,39 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     updateSpeedWarningsList();
   };
 
+  const updateCollisionsList = () => {
+    const collisionsList = document.getElementById('collisions');
+    collisionsList.innerHTML = collisions.map(c => `Drone ${c.drone1} and Drone ${c.drone2} at ${c.time.toFixed(2)}s`).join('<br>');
+  };
+
+  const updateSpeedWarningsList = () => {
+    const speedList = document.getElementById('speed-warnings');
+    speedList.innerHTML = speedWarnings.map(w => `Drone ${w.droneId} at ${w.time.toFixed(2)}s (${w.speed.toFixed(2)} m/s)`).join('<br>');
+  };
+
+  document.getElementById('play-pause').addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    document.getElementById('play-pause').textContent = isPlaying ? 'Pause' : 'Play';
+  });
+
+  document.getElementById('restart').addEventListener('click', () => {
+    currentTime = 0;
+    document.getElementById('timeline').value = 0;
+    document.getElementById('time-display').textContent = formatTime(currentTime);
+    updateDrones(currentTime);
+  });
+
+  document.getElementById('timeline').addEventListener('input', (e) => {
+    currentTime = (e.target.value / 100) * maxTime;
+    document.getElementById('time-display').textContent = formatTime(currentTime);
+    updateDrones(currentTime);
+  });
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+
 });
