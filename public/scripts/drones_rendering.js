@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
+
 
 const state = {
   // data loaded from JSON
@@ -134,30 +136,46 @@ const addSkybox = () => {
 
 /** load drone OBJ and instantiate a clone per drone record */
 const loadDroneModelAndInstantiate = () => {
-  state.loader = new OBJLoader();
 
-  // loader callback clones the loaded object for each drone in data
-  state.loader.load('models/drone.obj', (object) => {
-    object.scale.set(0.5, 0.5, 0.5);
-
-    // instantiate clones for each drone, set initial position, and push to state.droneModels
-    state.drones.forEach((droneData) => {
-      const drone = object.clone();
-      const initialPosition = droneData.waypoints[0].position;
-      drone.position.set(
-        initialPosition.lng_X * state.scaleFactor,
-        initialPosition.alt_Y * state.scaleFactor,
-        initialPosition.lat_Z * state.scaleFactor
-      );
-      state.scene.add(drone);
-      state.droneModels.push({
-        model: drone,
-        waypoints: droneData.waypoints,
-        previousPosition: null
+    // --- NEW: load .MTL first so OBJ can use all its materials ---
+    const mtlLoader = new MTLLoader();
+    mtlLoader.setPath('models/');
+  
+    mtlLoader.load('professional_drone.mtl', (materials) => {
+      materials.preload();
+  
+      const objLoader = new OBJLoader();
+      objLoader.setMaterials(materials);
+      objLoader.setPath('models/');
+  
+      // loader callback clones the loaded object for each drone in data
+      objLoader.load('drone.obj', (object) => {
+        object.scale.set(0.5, 0.5, 0.5);
+  
+        // instantiate clones for each drone, set initial position, and push to state.droneModels
+        state.drones.forEach((droneData) => {
+          const drone = object.clone();
+          const initialPosition = droneData.waypoints[0].position;
+  
+          drone.position.set(
+            initialPosition.lng_X * state.scaleFactor,
+            initialPosition.alt_Y * state.scaleFactor,
+            initialPosition.lat_Z * state.scaleFactor
+          );
+  
+          state.scene.add(drone);
+  
+          state.droneModels.push({
+            model: drone,
+            waypoints: droneData.waypoints,
+            previousPosition: null
+          });
+        });
       });
     });
-  });
-};
+  };
+  
+  
 
 /** draw green trajectory lines for every drone (points from waypoints) */
 const drawTrajectories = () => {
