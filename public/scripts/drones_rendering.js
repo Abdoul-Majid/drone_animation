@@ -99,18 +99,26 @@ const addControlsAndLights = () => {
 
 /** create ground plane with repeating texture */
 const addGround = () => {
-  const groundTexture = new THREE.TextureLoader().load('models/sol.jpg');
-  groundTexture.wrapS = THREE.RepeatWrapping;
-  groundTexture.wrapT = THREE.RepeatWrapping;
-  groundTexture.repeat.set(10, 10);
-
-  const groundMaterial = new THREE.MeshPhongMaterial({ map: groundTexture });
-  const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
-  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = 0;
-  state.scene.add(ground);
-};
+    const groundTexture = new THREE.TextureLoader().load('models/sol.jpg');
+  
+    // Repetition of the texture
+    groundTexture.wrapS = THREE.RepeatWrapping;
+    groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set(200, 200);
+  
+    groundTexture.minFilter = THREE.NearestFilter;
+    groundTexture.magFilter = THREE.NearestFilter;
+    groundTexture.anisotropy = state.renderer.capabilities.getMaxAnisotropy();
+  
+    const groundMaterial = new THREE.MeshPhongMaterial({ map: groundTexture });
+    const groundGeometry = new THREE.PlaneGeometry(1000, 1000);
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = 0;
+  
+    state.scene.add(ground);
+  };
+  
 
 /** add a simple skybox (single texture on a giant cube) */
 const addSkybox = () => {
